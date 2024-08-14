@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>responsive carousel</title>
+  <style>
+    body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #fff; 
+  margin: 0;
+  overflow: hidden;
+}
+
+.phone-frame {
+  position: relative;
+  width: 350px; 
+  height: 600px;
+  overflow: hidden;
+}
+
+.phone-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.phone-content {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-text {
+  position: absolute;
+  top: 50px; 
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  color: #000;
+  font-family: Arial, sans-serif;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+.carousel-wrapper {
+  position: absolute;
+  top: 15%; 
+  left: 50%; 
+  width: 900px; 
+  height: 70%; 
+  overflow: hidden; 
+  transform: translateX(-50%);
+}
+
+.carousel {
+  margin-top: 4px;
+  width: 900px; 
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: transform 1s ease;
+}
+
+.carousel__container {
+  display: flex;
+  transition: transform 1s ease, opacity 1s ease;
+  gap: -5px;
+}
+
+.carousel__item {
+  width: 100%;
+  height: 110%;
+  flex: 0 0 300px; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transform: scale(0.8); 
+  opacity: 0; 
+  transition: transform 1s ease, opacity 1s ease;
+}
+
+.carousel__item.center {
+  transform: scale(1); 
+  opacity: 1; 
+}
+
+.carousel__item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.5); 
+  opacity: 0; 
+  transition: opacity 1s ease;
+}
+
+.carousel__item:not(.center)::before {
+  opacity: 1; 
+}
+
+.carousel__item video {
+  width: 106%;    /*  This controls the  width of the item */
+  margin-left: -4px;
+  margin-top: 0px; /* This controls the positioning  */
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  cursor: pointer; 
+}
+
+.footer-image {
+  position: absolute;
+  margin-top: wpx;
+  margin-bottom: 20px;
+  bottom: 0;
+  width: 317px; 
+  height: 20%; 
+  margin-right: 4px;
+}
+
+.header-img {
+  margin-bottom: 400px;
+  width: 90%;
+  margin-left: -2px;
+}
+
+
+@media (max-width: 768px) {
+  .phone-frame {
+    transform: scale(0.6); 
+    transform-origin: top center; 
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <img src="phone_only.png" alt="Phone Frame" class="phone-image">
+    <div class="phone-content">
+      <img class="header-img" src="top_img.png" alt="header-img">
+      <div class="carousel-wrapper">
+        <div class="carousel">
+          <div class="carousel__container">
+            <div class="carousel__item"><video src="carousel_videos/6.mp4" class="video" muted playsinline></video></div>
+            <div class="carousel__item"><video src="carousel_videos/112.mp4" class="video" muted playsinline></video></div>
+            <div class="carousel__item"><video src="carousel_videos/2.mp4" class="video" muted playsinline></video></div>
+            <div class="carousel__item"><video src="carousel_videos/3.mp4" class="video" muted playsinline></video></div>
+            <div class="carousel__item"><video src="carousel_videos/4.mp4" class="video" muted playsinline></video></div>
+            <div class="carousel__item"><video src="carousel_videos/5.mp4" class="video" muted playsinline></video></div>
+            <div class="carousel__item"><video src="carousel_videos/6.mp4" class="video" muted playsinline></video></div>
+            <div class="carousel__item"><video src="carousel_videos/112.mp4" class="video" muted playsinline></video></div>
+          </div> 
+        </div>
+      </div>
+      <img src="bottom_img.png" alt="Footer" class="footer-image">
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+  const carouselContainer = document.querySelector('.carousel__container');
+  const videos = document.querySelectorAll('.carousel__item video');
+  const items = document.querySelectorAll('.carousel__item');
+  let currentIndex = 1; 
+  let timeout;
+
+  function updateCarousel(instant = false) {
+    items.forEach((item, i) => {
+      if (i === currentIndex) {
+        item.classList.add('center');
+      } else {
+        item.classList.remove('center');
+      }
+    });
+
+    const offset = -(currentIndex -1) * 300; 
+    if (instant) {
+      carouselContainer.style.transition = 'none';
+    } else {
+      carouselContainer.style.transition = 'transform 1s ease';
+    }
+    carouselContainer.style.transform = `translateX(${offset}px)`;
+  }
+
+  function playVideo(index) {
+    clearTimeout(timeout);
+    videos.forEach((video, i) => {
+      if (i === index) {
+        video.play();
+      } else {
+        video.pause();
+        video.currentTime = 0; 
+      }
+    });
+
+    timeout = setTimeout(() => {
+      currentIndex++;
+      if (currentIndex === items.length - 1) {
+        updateCarousel();
+        setTimeout(() => {
+          currentIndex = 1;
+          updateCarousel(true); 
+          playVideo(currentIndex);
+        }, 1000); 
+      } else {
+        updateCarousel();
+        playVideo(currentIndex);
+      }
+    }, 3000); 
+  }
+
+  videos.forEach((video, index) => {
+    video.addEventListener('click', () => {
+      currentIndex = index;
+      updateCarousel();
+      playVideo(currentIndex);
+    });
+  });
+
+  
+  updateCarousel();
+  playVideo(currentIndex);
+});
+  </script>
+</body>
+</html>
